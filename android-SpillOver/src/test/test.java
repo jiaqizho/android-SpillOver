@@ -1,9 +1,10 @@
 package test;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
@@ -23,8 +24,9 @@ import android.util.Log;
 public class test {
 	public void testd() throws Exception {
 		
-			URL url = new URL("http://www.baidu.com");
+			URL url = new URL("http://192.168.1.104:8080/QQServer/Expires");
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			setPostParams(connection);
 		 	ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
 	        int responseCode = connection.getResponseCode();
 	        if (responseCode == -1) {
@@ -45,8 +47,19 @@ public class test {
 	        for(int i = 0 ; i < response.getAllHeaders().length ; i++)
 	        	Log.i("VolleyPatterns", response.getAllHeaders()[i] + "");
 	}
-	
-    private static HttpEntity entityFromConnection(HttpURLConnection connection) {
+
+	private void setPostParams(HttpURLConnection connection) throws IOException {
+        connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		connection.getOutputStream();
+        DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+        String s = "aaba=dddd";
+        byte[] postBody = s.getBytes("UTF-8");
+        out.write(postBody);
+        out.close();
+	}
+
+	private static HttpEntity entityFromConnection(HttpURLConnection connection) {
         BasicHttpEntity entity = new BasicHttpEntity();
         InputStream inputStream;
         try {

@@ -24,11 +24,11 @@ public class BasicFileCache extends Cache{
 	
 	protected static final long DEFULAT_VERSION_CODE = 1407573710;	//2014/8/9 16:41:50
 
-	protected static final long DEFULAT_INDEXPOOL_SIZE = 6;
+	protected static final long DEFULAT_INDEXPOOL_SIZE = 6;	//索引池变量个数
 	
 	private static final int DEFULAT_LONGSTORAGE_LENGTH = 4 ;
 	
-	private static final int DEFULAT_INDEXPOLL_LENGTH = 30;
+	private static final int DEFULAT_INDEXPOLL_LENGTH = 30;	//索引池子大小
 	
 	protected int mIndexNumbers = 0 ;
 	
@@ -93,7 +93,7 @@ public class BasicFileCache extends Cache{
 		writelong(out,entry.ttl);
 		writelong(out, entry.expires);
 		writeHeads(lengths[4],out,entry.headers);
-		writeString(lengths[5], out, entry.datas);
+		out.write(entry.datas, 0, entry.datas.length);
 	}
 
 
@@ -103,6 +103,9 @@ public class BasicFileCache extends Cache{
 		byte[] indexPool = new byte[DEFULAT_INDEXPOLL_LENGTH];
 		byte[] constPool = null;
 		File file = getFileForKey(requestKey);
+		if(!file.exists()){
+			return null;
+		}
 		FileInputStream in = new FileInputStream(file);
 		
 		byte[] datas =  streamToBytes(in,(int)file.length());
@@ -124,7 +127,7 @@ public class BasicFileCache extends Cache{
 		entry.ttl = readLong(mList.get(2));
 		entry.expires = readLong(mList.get(3));
 		entry.headers = parseHeaders(mList.get(4));
-		entry.datas = new String(mList.get(5));
+		entry.datas = mList.get(5);
 	}
 
 	private Map<String, String> parseHeaders(byte[] headers) {
@@ -201,7 +204,9 @@ public class BasicFileCache extends Cache{
 	
 	
 	protected void writeString(long length,OutputStream out,String str) throws IOException {
-		
+		if(length == 0 && str == null){
+			return ;
+		}
 		byte[] b = str.getBytes("UTF-8");
 		if(length != b.length)
 			throw new IOException("IndexPool is out of step with ConstanPool");
@@ -220,6 +225,9 @@ public class BasicFileCache extends Cache{
 	}
 	
 	private void writeStringInConst(OutputStream out, String key) throws IOException {
+		if(key == null){
+			return;
+		}
 		byte[] bytes = key.getBytes("UTF-8");
 		writelong(out, bytes.length);
 		out.write(bytes, 0, bytes.length);
@@ -277,5 +285,12 @@ public class BasicFileCache extends Cache{
         }
         return bytes;
     }
+
+	@Override
+	public boolean initialize() {
+		// TODO Auto-generated method stub
+		//进行一些数据初始化操作:比如设置一个数据文件过期时间,数据文件是否损坏等排查,如果这里抛出异常,那么进行停职cache队列,或者全部不进行cache的操作;
+		return true;
+	}
 
 }

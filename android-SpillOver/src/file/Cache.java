@@ -27,9 +27,9 @@ public abstract class Cache {
 	
 	public static class Entry{
 		
-		public String etag;
+		public String etag;	//外部进行处理,如果etag没有就设置为null
 		
-		public String iMS;
+		public String iMS; //外部进行处理,如果last - modified没有就设置为null
 		
 		public long ttl;
 		
@@ -37,10 +37,11 @@ public abstract class Cache {
 		
 		public Map<String,String> headers;
 		
-		public String datas;
+		public byte[] datas;
 		
 	}
 	
+	public abstract boolean initialize();
 	
 	protected static Iterator<Object> iterator(Cache.Entry entry) {
 		final List<Object> mlist = new ArrayList<Object>();

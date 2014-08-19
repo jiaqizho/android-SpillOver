@@ -25,7 +25,7 @@ public class BasicCalculator implements ConstPoolCalc {
 		lengths[2] = DEFULAT_LONGSTORAGE_LENGTH;
 		lengths[3] = DEFULAT_LONGSTORAGE_LENGTH;
 		lengths[4] = mapLength(entry.headers);
-		lengths[5] = strLength(entry.datas);
+		lengths[5] = entry.datas.length;
 		
 		return lengths;
 	}
@@ -44,6 +44,9 @@ public class BasicCalculator implements ConstPoolCalc {
 	
 
 	private long strLength(String str){
+		if(str == null){
+			return 0;
+		}
 		try {
 			return str.getBytes("UTF-8").length;
 		} catch (UnsupportedEncodingException e) {

@@ -2,7 +2,23 @@ package frameDesign;
 
 import java.util.Map;
 
+/****
+ * 1.能设置post get		默认post
+ * 2.能设置request优先级		默认相同
+ * 3.能设置是否进行缓存		默认缓存
+ * 4.能设置请求头			默认null
+ * 5.能设置参数头			默认null			
+ * 
+ * 
+ */
 public abstract class Request <T> implements Comparable<Request<T>> {
+	
+	public Method method = Method.POST; 
+	
+	public static enum Method{
+		GET,
+		POST
+	}
 	
 	public Request(String url){
 		this.mUrl = url;
@@ -18,6 +34,15 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 		return Priority.MEDIUM; 
 	}
 	
+	@Override
+	public int compareTo(Request<T> another) {
+		if(this.getPriority() == another.getPriority()){
+			return 0;
+		}
+		return another.getPriority().ordinal() - this.getPriority().ordinal();
+	}
+	
+	
 	public boolean shouldCache(){
 		return true;
 	}
@@ -27,7 +52,28 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	public String getUrl(){
 		return mUrl;
 	}
+
 	
+	private String Etag = null;
+	
+	public String getEtag() {
+		return Etag;
+	}
+
+	public void setEtag(String etag) {
+		Etag = etag;
+	}
+	
+	private String iMS = null;
+	
+	public String getiMS() {
+		return iMS;
+	}
+
+	public void setiMS(String iMS) {
+		this.iMS = iMS;
+	}
+
 	protected Map<String,String> headers;	//请求头
 	
 	protected Map<String,String> params;	//请求参数
@@ -38,15 +84,6 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 
 	protected abstract T handlerCallBack();
 	
-	@Override
-	public int compareTo(Request<T> another) {
-		
-		if(this.getPriority() == another.getPriority()){
-			return 0;
-		}
-		
-		return another.getPriority().ordinal() - this.getPriority().ordinal();
-	}
-	
+
 	
 }

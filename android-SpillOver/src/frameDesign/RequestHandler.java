@@ -21,14 +21,22 @@ public class RequestHandler implements Handler {
 	
 	private NetworkHandler mNetworkHandler = null;
 	
+	private ResponseParse parse;
+	
 	public RequestHandler(HttpHeap heap, Cache cache) {
+		this(heap,cache,new HttpResponseParse());
+	}
+
+	
+	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse) {
 		this.mHttpHeap = heap;
 		this.mCache = cache;
 		mCacheQueue = new PriorityBlockingQueue<Request<?>>();
 		mNetQueue = new PriorityBlockingQueue<Request<?>>();
-		
+		this.parse = parse;
 	}
 
+	
 	@Override
 	public void parseRequest(Request<?> request) {
 		
@@ -36,14 +44,19 @@ public class RequestHandler implements Handler {
 
 	@Override
 	public void init()  {
-		mCacheHandler = new CacheHandler(mCacheQueue, mCache);
-		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap);
+		mCacheHandler = new CacheHandler(mCacheQueue, mNetQueue,mCache);
+		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse);
 		mCacheHandler.start();
-		mNetworkHandler.start();
+		mNetworkHandler.start(); 
 		mNetQueue.add(new Request<String>("http://192.168.1.104:8080/QQServer/Expires") {
+			
+			@Override
+			public boolean shouldCache() {
+				return true;
+			}
 
 			@Override
-			protected String handlerCallBack() {
+			protected String handlerCallBack() { 
 				return "dddd";
 			}
 
