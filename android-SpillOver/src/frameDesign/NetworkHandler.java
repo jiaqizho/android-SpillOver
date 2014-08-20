@@ -10,7 +10,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicHttpResponse;
 
-import android.util.Log;
+import android.os.Looper;
 import file.Cache;
 import file.IndexPoolOverflowException;
 
@@ -26,12 +26,18 @@ public class NetworkHandler extends Thread{
 
 	private static final int DEFAULT_POOL_SIZE = 4096;
 	
-	public NetworkHandler(BlockingQueue<Request<?>> mQueue, Cache mCache, HttpHeap mHttpHeap , ResponseParse parse) {
+	private ResponseHandler mCallBack = null;
+
+	public NetworkHandler(BlockingQueue<Request<?>> mQueue, Cache mCache,
+			HttpHeap mHttpHeap , ResponseParse parse , ResponseHandler response) {
 		this.mQueue = mQueue;
 		this.mCache = mCache;
 		this.mHttpHeap = mHttpHeap;
 		this.mResponseParse = parse;
+		this.mCallBack = response;
 	}
+	
+	
 	
 	@Override
 	public void run() {
@@ -41,19 +47,22 @@ public class NetworkHandler extends Thread{
 		while(true){
 			try {
 				Request<?> request = mQueue.take();
+				
+				String callBackdata = null;
 				BasicHttpResponse response = mHttpHeap.handlerRequest(request);
 				Map<String,String> responseHeaders = convertHeaders(response.getAllHeaders());
 		        StatusLine statusLine = response.getStatusLine();
 		        int statusCode = statusLine.getStatusCode();
+		        
+				//304操作;
 		        if(statusCode == HttpStatus.SC_NOT_MODIFIED){
-		        	
-		        	
-					//304操作; 
+		        	Cache.Entry entry = mCache.get(request.getUrl());
+		        	callBackdata = mResponseParse.byteToEntity(entry.datas,responseHeaders);
+		        	mCallBack.callBack(request, callBackdata);
+		        	continue;
 				}
 		        
-		        /**
-		         * 设好缓存
-		         */
+		        // 设好缓存 
 				if(request.shouldCache()){
 					Cache.Entry entry = new Cache.Entry();
 					long ttl = mResponseParse.parseTtl(responseHeaders.get("Cache-Control"));
@@ -65,16 +74,12 @@ public class NetworkHandler extends Thread{
 					entry.iMS = responseHeaders.get("Last-Modified");
 					entry.etag = responseHeaders.get("Etag");
 					entry.headers = responseHeaders;
-					entry.datas = mResponseParse.entityToBytes(response.getEntity(), new ByteArrayPool(DEFAULT_POOL_SIZE));
+					byte[] bd = mResponseParse.entityToBytes(response.getEntity(), new ByteArrayPool(DEFAULT_POOL_SIZE));
+					entry.datas = bd;
+					callBackdata = mResponseParse.byteToEntity(bd,responseHeaders);
 					mCache.put(request.getUrl(), entry);
 				}
-				
-				
-				
-				/**
-				 * 处理完缓存之后就进行reponse回调操作
-				 */
-				
+				mCallBack.callBack(request, callBackdata);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
@@ -94,4 +99,6 @@ public class NetworkHandler extends Thread{
         }
         return result;
     }
+    
+
 }

@@ -13,17 +13,17 @@ import java.util.Map;
  */
 public abstract class Request <T> implements Comparable<Request<T>> {
 	
-	public ResponseListener<?> listener;
+	public ResponseListener<T> listener;
 	
 	private String mUrl;
 	
-	Request(String url ,ResponseListener<?> listener){
+	Request(String url ,ResponseListener<T> listener){
 		this.listener = listener;
 		this.mUrl = url;
 	}
 	
 	interface ResponseListener<T>{
-		public void callBack(T arg0);
+		public void callBack(String responseData);
 	}
 	
 	public Method method = Method.POST; 

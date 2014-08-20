@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import android.os.Looper;
 import android.util.Log;
-
 import file.Cache;
 
 public class RequestHandler implements Handler {
@@ -25,17 +25,20 @@ public class RequestHandler implements Handler {
 	
 	private ResponseParse parse;
 	
+	private ResponseHandler mCallBack = null;
+	
 	public RequestHandler(HttpHeap heap, Cache cache) {
-		this(heap,cache,new HttpResponseParse());
+		this(heap,cache,new HttpResponseParse(),new CallBackResponse(new android.os.Handler(Looper.getMainLooper())));
 	}
 
 	
-	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse) {
+	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse,ResponseHandler callBack) {
 		this.mHttpHeap = heap;
 		this.mCache = cache;
 		mCacheQueue = new PriorityBlockingQueue<Request<?>>();
 		mNetQueue = new PriorityBlockingQueue<Request<?>>();
 		this.parse = parse;
+		this.mCallBack = callBack;
 	}
 
 	
@@ -46,8 +49,9 @@ public class RequestHandler implements Handler {
 
 	@Override
 	public void init()  {
-		mCacheHandler = new CacheHandler(mCacheQueue, mNetQueue,mCache);
-		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse);
+		
+		mCacheHandler = new CacheHandler(mCacheQueue, mNetQueue,mCache,parse,mCallBack);
+		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse,mCallBack);
 		mCacheHandler.start();
 		mNetworkHandler.start(); 
 		mNetQueue.add(new Request<String>("http://192.168.1.104:8080/QQServer/Expires",new Request.ResponseListener<String>() {

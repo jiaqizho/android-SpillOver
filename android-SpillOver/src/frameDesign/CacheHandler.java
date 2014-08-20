@@ -15,20 +15,26 @@ public class CacheHandler extends Thread {
 	private CacheJudgement mCacheJudge;
 	
 	private volatile boolean quit = false;
-	
-	
-	public CacheHandler(BlockingQueue<Request<?>> mQueue,
-			BlockingQueue<Request<?>> mNetQueue, Cache mCache) {
-		this(mQueue,mNetQueue,mCache,new CacheJudgement());
-	}
 
+	private ResponseParse mResponseParse = null;
+	
+	private ResponseHandler mCallBack = null;
+
+	public CacheHandler(BlockingQueue<Request<?>> mQueue,
+			BlockingQueue<Request<?>> mNetQueue, Cache mCache,ResponseParse parse,ResponseHandler callBack) {
+		this(mQueue,mNetQueue,mCache,parse,new CacheJudgement(),callBack);
+	}
+	
 	public CacheHandler(BlockingQueue<Request<?>> mQueue, BlockingQueue<Request<?>> mNetQueue,
-			Cache mCache,CacheJudgement judge) {
+			Cache mCache,ResponseParse parse,CacheJudgement judge,ResponseHandler callBack) {
 		this.mQueue = mQueue;
 		this.mNetQueue = mNetQueue;
 		this.mCache = mCache;
 		this.mCacheJudge = judge;
+		this.mResponseParse = parse;
+		this.mCallBack = callBack;
 	}
+	
 	
 	@Override
 	public void run() {
@@ -45,18 +51,17 @@ public class CacheHandler extends Thread {
 						mNetQueue.put(request);
 					}
 					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)){
-						//回调处理
+						String callBackdata = null;
+			        	callBackdata = mResponseParse.byteToEntity(entry.datas,entry.headers);
+			        	mCallBack.callBack(request, callBackdata);
 						continue;
 					} 
-						
 					//过期了之后丢放etag 和  Last-Modified
 					if(mCacheJudge.usefulEtag(entry.etag)) {
 						request.setEtag(entry.etag);
 					} else if(mCacheJudge.usefulIMS(entry.iMS)){
 						request.setiMS(entry.iMS);
 					} 
-					
-					
 				} catch (IOException e) {
 				} finally{
 					if(quit){

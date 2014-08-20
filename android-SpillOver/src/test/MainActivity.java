@@ -9,6 +9,7 @@ import frameDesign.SpillOver;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends Activity{
 
@@ -17,7 +18,7 @@ public class MainActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mainview);
 		
-		
+		Log.i("DemoLog", Thread.currentThread().toString() + "Mainaaaas");
 		new Thread(new Runnable() { 
 			
 			@Override
