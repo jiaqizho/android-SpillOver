@@ -16,7 +16,7 @@ public class SpillOver {
 	
 	private static boolean isAlive = false;
 	
-	public static Handler newRequestQueue(Context context) throws IOException, IndexPoolOverflowException{
+	public static RequestHandler newRequestQueue(Context context) throws IOException, IndexPoolOverflowException{
 		
 		synchronized(SpillOver.class){
 			if(!isAlive){
@@ -25,19 +25,16 @@ public class SpillOver {
 				return null;
 			}
 		}
-		
         File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR); 
 		Cache cache = new BasicFileCache(new BasicCalculator(),cacheDir);
-		
 		HttpHeap heap = null;
 		if(Build.VERSION.SDK_INT >= 9 ){
 			heap = new HttpLaunch();
 		} else {
 			throw new Error(new Throwable("SDK版本出现问题"));
 		}
-		Handler handler = new RequestHandler(heap,cache);
+		RequestHandler handler = new RequestHandler(heap,cache);
 		handler.init();
-		
 		return handler;
 	}
 	

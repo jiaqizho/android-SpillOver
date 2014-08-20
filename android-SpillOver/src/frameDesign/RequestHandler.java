@@ -1,14 +1,12 @@
 package frameDesign;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import android.os.Looper;
 import file.Cache;
 
-public class RequestHandler implements Handler {
+public class RequestHandler  {
 
 	private HttpHeap mHttpHeap;
 	
@@ -40,53 +38,21 @@ public class RequestHandler implements Handler {
 		this.mCallBack = callBack;
 	}
 
-	
-	@Override
-	public void parseRequest(Request<?> request) {
-		 
-	}
 
-	@Override
 	public void init()  {
 		
 		mCacheHandler = new CacheHandler(mCacheQueue, mNetQueue,mCache,parse,mCallBack);
 		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse,mCallBack);
 		mCacheHandler.start();
 		mNetworkHandler.start(); 
-		mCacheQueue.add(new Request<String>("http://192.168.1.104:8080/QQServer/Expires",new Request.ResponseListener<String>() {
+	}
 
-			@Override
-			public void callBack(String arg0) {
-				//Log.i("DemoLog", "Data:" + arg0);
-			}
-			
-		}) {
-			
-			@Override
-			public boolean shouldCache() {
-				return true;
-			}
-
-			@Override
-			protected String handlerCallBack() { 
-				return "dddd";
-			}
-
-			@Override
-			public Map<String, String> getHeader() {
-				Map<String,String> map = new HashMap<String, String>();
-				map.put("User-Agent", "nimashabi");
-				return map;
-			}
-
-			@Override
-			public Map<String, String> getParam() {
-				Map<String,String> map = new HashMap<String, String>();
-				map.put("qusiba", "jilao");
-				return map;
-			}
-			
-		});
+	public void add(Request<?> request){
+		if(request.shouldCache()){
+			mCacheQueue.add(request);
+		} else {
+			mNetQueue.add(request);
+		}
 	}
 	
 }

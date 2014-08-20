@@ -17,12 +17,12 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	
 	private String mUrl;
 	
-	Request(String url ,ResponseListener<T> listener){
+	public Request(String url ,ResponseListener<T> listener){
 		this.listener = listener;
 		this.mUrl = url;
 	}
 	
-	interface ResponseListener<T>{
+	public interface ResponseListener<T>{
 		public void callBack(String responseData);
 	}
 	
