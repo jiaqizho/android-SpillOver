@@ -2,23 +2,22 @@ package test;
 
 import java.io.IOException;
 
+import android.app.Activity;
+import android.os.Bundle;
+
 import com.example.android_spillover.R;
 
 import file.IndexPoolOverflowException;
 import frameDesign.SpillOver;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-
 public class MainActivity extends Activity{
 
-	@Override
+	@Override 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mainview);
+
 		
-		Log.i("DemoLog", Thread.currentThread().toString() + "Mainaaaas");
 		new Thread(new Runnable() { 
 			
 			@Override

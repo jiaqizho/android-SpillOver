@@ -10,7 +10,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicHttpResponse;
 
-import android.os.Looper;
 import file.Cache;
 import file.IndexPoolOverflowException;
 
@@ -47,7 +46,6 @@ public class NetworkHandler extends Thread{
 		while(true){
 			try {
 				Request<?> request = mQueue.take();
-				
 				String callBackdata = null;
 				BasicHttpResponse response = mHttpHeap.handlerRequest(request);
 				Map<String,String> responseHeaders = convertHeaders(response.getAllHeaders());
@@ -77,10 +75,10 @@ public class NetworkHandler extends Thread{
 					byte[] bd = mResponseParse.entityToBytes(response.getEntity(), new ByteArrayPool(DEFAULT_POOL_SIZE));
 					entry.datas = bd;
 					callBackdata = mResponseParse.byteToEntity(bd,responseHeaders);
-					mCache.put(request.getUrl(), entry);
+					mCache.put(request.getUrl(), entry); 
 				}
 				mCallBack.callBack(request, callBackdata);
-			} catch (IOException e) {
+			} catch (IOException e) { 
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();

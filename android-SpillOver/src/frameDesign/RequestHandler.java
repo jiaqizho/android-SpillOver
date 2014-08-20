@@ -6,7 +6,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import android.os.Looper;
-import android.util.Log;
 import file.Cache;
 
 public class RequestHandler implements Handler {
@@ -44,7 +43,7 @@ public class RequestHandler implements Handler {
 	
 	@Override
 	public void parseRequest(Request<?> request) {
-		
+		 
 	}
 
 	@Override
@@ -54,11 +53,11 @@ public class RequestHandler implements Handler {
 		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse,mCallBack);
 		mCacheHandler.start();
 		mNetworkHandler.start(); 
-		mNetQueue.add(new Request<String>("http://192.168.1.104:8080/QQServer/Expires",new Request.ResponseListener<String>() {
+		mCacheQueue.add(new Request<String>("http://192.168.1.104:8080/QQServer/Expires",new Request.ResponseListener<String>() {
 
 			@Override
 			public void callBack(String arg0) {
-				Log.i("DemoLog", Thread.currentThread().toString() + "");
+				//Log.i("DemoLog", "Data:" + arg0);
 			}
 			
 		}) {

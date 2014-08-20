@@ -1,7 +1,6 @@
 package file;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ public class BasicCalculator implements ConstPoolCalc {
 	
 	private static final int DEFULAT_INDEXPOOL_SIZE = 6;
 	
-	private static final int DEFULAT_INDEXPOLL_LENGTH = 20;
 	
 	@Override
 	public long[] calcLength(Cache.Entry entry) {
@@ -69,7 +67,7 @@ public class BasicCalculator implements ConstPoolCalc {
         return str == null || str.trim().length() == 0;  
     }  
 	
-	private boolean isEmpty(Map map) {  
+	private boolean isEmpty(Map<?,?> map) {  
         return map.isEmpty();  
     }
 	
