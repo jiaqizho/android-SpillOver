@@ -24,7 +24,7 @@ public class NetworkHandler extends Thread{
 	
 	private ResponseParse mResponseParse = null;
 
-	private static final int DEFUALT_MAXBUFFER_SIZE = 4096;
+	private static final int DEFAULT_POOL_SIZE = 4096;
 	
 	public NetworkHandler(BlockingQueue<Request<?>> mQueue, Cache mCache, HttpHeap mHttpHeap , ResponseParse parse) {
 		this.mQueue = mQueue;
@@ -35,6 +35,7 @@ public class NetworkHandler extends Thread{
 	
 	@Override
 	public void run() {
+	
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		
 		while(true){
@@ -45,18 +46,18 @@ public class NetworkHandler extends Thread{
 		        StatusLine statusLine = response.getStatusLine();
 		        int statusCode = statusLine.getStatusCode();
 		        if(statusCode == HttpStatus.SC_NOT_MODIFIED){
+		        	
+		        	
 					//304操作; 
 				}
-		        Log.i("DemoLog", "sssssssssssssssssssssssssssss" + request.shouldCache());
-				/***
-				 * 处理cache缓存,处理换出需要在这里把字段都设置好,方便之后取;
-				 */
+		        
+		        /**
+		         * 设好缓存
+		         */
 				if(request.shouldCache()){
 					Cache.Entry entry = new Cache.Entry();
 					long ttl = mResponseParse.parseTtl(responseHeaders.get("Cache-Control"));
-					Log.i("DemoLog", "ttl" + ttl);
 					if(ttl == -1){
-						Log.i("DemoLog", "sssssssssssssssssssssssssssss");
 						continue; 
 					} 
 					entry.ttl = ttl;
@@ -64,21 +65,10 @@ public class NetworkHandler extends Thread{
 					entry.iMS = responseHeaders.get("Last-Modified");
 					entry.etag = responseHeaders.get("Etag");
 					entry.headers = responseHeaders;
-					entry.datas = mResponseParse.entityToBytes(response.getEntity(), new ByteArrayPool(DEFUALT_MAXBUFFER_SIZE));
-					
-					
+					entry.datas = mResponseParse.entityToBytes(response.getEntity(), new ByteArrayPool(DEFAULT_POOL_SIZE));
 					mCache.put(request.getUrl(), entry);
 				}
 				
-				Cache.Entry entry = mCache.get("http://192.168.1.104:8080/QQServer/Expires");
-				Log.i("VolleyPatterns", "entry.iMS" + entry.iMS);
-				Log.i("VolleyPatterns", "entry.ttl" + entry.ttl);
-				Log.i("VolleyPatterns", "entry.expires" + entry.expires);
-				for(java.util.Map.Entry<String, String> _entry : entry.headers.entrySet()) {
-					Log.i("VolleyPatterns", "_entry.getKey()" + _entry.getKey() + "");
-					Log.i("VolleyPatterns", "_entry.getValue()" + _entry.getValue() + "");
-				}
-				Log.i("VolleyPatterns", "DATASSSS" + entry.datas );
 				
 				
 				/**

@@ -28,13 +28,13 @@ public class HttpLaunch implements HttpHeap {
 		URL url = new URL(request.getUrl());
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		for(Entry<String,String> entry : request.getHeader().entrySet()){
-			connection.setRequestProperty(entry.getKey(), entry.getValue());					
+			connection.addRequestProperty(entry.getKey(), entry.getValue());					
 		}
 		if(request.getEtag() != null){
-			connection.setRequestProperty("If-None-Match",request.getEtag());
+			connection.addRequestProperty("If-None-Match",request.getEtag());
 		} 
 		if(request.getiMS() != null){
-			connection.setRequestProperty("If-Modified-Since",request.getEtag());
+			connection.addRequestProperty("If-Modified-Since",request.getEtag());
 		} 
 		setPostParams(request,connection);
 	 	ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
@@ -86,7 +86,6 @@ public class HttpLaunch implements HttpHeap {
         out.write(postBody);
         out.close();
 	}
-
 	
 	private HttpEntity entityFromConnection(HttpURLConnection connection) {
         BasicHttpEntity entity = new BasicHttpEntity();

@@ -8,10 +8,23 @@ import java.util.Map;
  * 3.能设置是否进行缓存		默认缓存
  * 4.能设置请求头			默认null
  * 5.能设置参数头			默认null			
- * 
+ * 6.强制设置毁掉接口
  * 
  */
 public abstract class Request <T> implements Comparable<Request<T>> {
+	
+	public ResponseListener<?> listener;
+	
+	private String mUrl;
+	
+	Request(String url ,ResponseListener<?> listener){
+		this.listener = listener;
+		this.mUrl = url;
+	}
+	
+	interface ResponseListener<T>{
+		public void callBack(T arg0);
+	}
 	
 	public Method method = Method.POST; 
 	
@@ -19,11 +32,6 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 		GET,
 		POST
 	}
-	
-	public Request(String url){
-		this.mUrl = url;
-	}
-	
 	private enum Priority{
 		LOW,
 		MEDIUM,
@@ -46,8 +54,6 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	public boolean shouldCache(){
 		return true;
 	}
-	
-	private String mUrl;
 	
 	public String getUrl(){
 		return mUrl;
