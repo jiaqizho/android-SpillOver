@@ -43,6 +43,7 @@ public abstract class Cache {
 	public abstract boolean initialize();
 	
 	protected static Iterator<Object> iterator(Cache.Entry entry) {
+	
 		final List<Object> mlist = new ArrayList<Object>();
 		mlist.add(entry.etag);
 		mlist.add(entry.iMS);

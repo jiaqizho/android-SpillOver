@@ -137,7 +137,6 @@ public class BasicFileCache extends Cache{
 				for(int i = 0 ; i < temp.length ; i++,colum++){
 					temp[i] = headers[colum];
 				}
-					
 				int length = (int)readLong(temp);
 				if(length == 0){
 					mList.add(null);
@@ -285,6 +284,7 @@ public class BasicFileCache extends Cache{
 
 	@Override
 	public boolean initialize() {
+	
 		// TODO Auto-generated method stub
 		//进行一些数据初始化操作:比如设置一个数据文件过期时间,数据文件是否损坏等排查,如果这里抛出异常,那么进行停职cache队列,或者全部不进行cache的操作;
 		return true;

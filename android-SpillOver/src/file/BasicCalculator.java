@@ -48,6 +48,7 @@ public class BasicCalculator implements ConstPoolCalc {
 		try {
 			return str.getBytes("UTF-8").length;
 		} catch (UnsupportedEncodingException e) {
+		
 		}
 		return 0;
 	}
@@ -97,8 +98,6 @@ public class BasicCalculator implements ConstPoolCalc {
 
 	@Override
 	public List<byte[]> parseConstPool(long[] indexs, byte[] constPool) {
-		/*for(long s : indexs)
-			System.out.println(s);*/
 		List<byte[]> mlist = new ArrayList<byte[]>();
 		int forword = 0;
 		for(int i = 0 ; i < indexs.length ; i++ ){
