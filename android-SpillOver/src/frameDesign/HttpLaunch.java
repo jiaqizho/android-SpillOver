@@ -27,15 +27,17 @@ public class HttpLaunch implements HttpHeap {
 		//System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		URL url = new URL(request.getUrl());
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-		for(Entry<String,String> entry : request.getHeader().entrySet()){
-			connection.addRequestProperty(entry.getKey(), entry.getValue());					
+		if(request.getHeader() != null){
+			for(Entry<String,String> entry : request.getHeader().entrySet()){
+				connection.addRequestProperty(entry.getKey(), entry.getValue());					
+			}
+			if(request.getEtag() != null){
+				connection.addRequestProperty("If-None-Match",request.getEtag());
+			} 
+			if(request.getiMS() != null){
+				connection.addRequestProperty("If-Modified-Since",request.getEtag());
+			} 
 		}
-		if(request.getEtag() != null){
-			connection.addRequestProperty("If-None-Match",request.getEtag());
-		} 
-		if(request.getiMS() != null){
-			connection.addRequestProperty("If-Modified-Since",request.getEtag());
-		} 
 		setPostParams(request,connection);
 	 	ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
         int responseCode = connection.getResponseCode();
@@ -69,6 +71,9 @@ public class HttpLaunch implements HttpHeap {
 		connection.getOutputStream();
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         Map<String,String> map = request.getParam();
+        if(map == null){
+        	return;
+        }
         String params = null;
         int record = 0;
         int size = map.entrySet().size();
