@@ -42,7 +42,7 @@ public class HttpLaunch implements HttpHeap {
 	 	ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
         int responseCode = connection.getResponseCode();
         if (responseCode == -1) {
-            throw new IOException("Á¬½ÓÊ§°Ü");
+            throw new IOException("è¿žæŽ¥å¤±è´¥");
         }
         StatusLine responseStatus = new BasicStatusLine(protocolVersion,
                 connection.getResponseCode(), connection.getResponseMessage());
