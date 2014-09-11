@@ -12,4 +12,6 @@ public interface ConstPoolCalc {
 	
 	public List<byte[]> parseConstPool(long[] indexs,byte[] constPool);
 	
+	
+	
 }

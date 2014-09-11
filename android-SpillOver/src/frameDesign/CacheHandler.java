@@ -22,6 +22,16 @@ public class CacheHandler extends Thread {
 	
 	private ResponseHandler mCallBack = null;
 	
+	private boolean isCancel = false;
+	
+	public boolean isCancel() {
+		return isCancel;
+	}
+
+	public void setCancel(boolean isCancel) {
+		this.isCancel = isCancel;
+	}
+
 	public CacheHandler(BlockingQueue<Request<?>> mQueue,
 			BlockingQueue<Request<?>> mNetQueue, Cache mCache,ResponseParse parse,ResponseHandler callBack) {
 		this(mQueue,mNetQueue,mCache,parse,new CacheJudgement(),callBack);
@@ -36,7 +46,24 @@ public class CacheHandler extends Thread {
 		this.mResponseParse = parse;
 		this.mCallBack = callBack;
 	} 
+	 
+	protected CacheHandler(Cache mCache,ResponseParse parse
+			,CacheJudgement judge,ResponseHandler callBack){ 
+		this.mCache = mCache;
+		this.mCacheJudge = judge;
+		this.mResponseParse = parse;
+		this.mCallBack = callBack;
+	}
 	
+	
+	protected void setNotModifyHeader(Request<?> request ,Cache.Entry entry){
+		if(mCacheJudge.usefulEtag(entry.etag)) {
+			request.setEtag(entry.etag);
+		} 
+		if(mCacheJudge.usefulIMS(entry.iMS)){
+			request.setiMS(entry.iMS);
+		} 
+	}
 	
 	@Override
 	public void run() {
@@ -47,30 +74,23 @@ public class CacheHandler extends Thread {
 		while(true){
 			try {
 				Request<?> request = mQueue.take();
+				
 				try { 
 					Cache.Entry entry = mCache.get(request.getUrl());
 					if(entry == null){
 						mNetQueue.put(request);
 						continue;
 					}
-					
 					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)){ 
 						String callBackdata = null;
 			        	callBackdata = mResponseParse.byteToEntity(entry.datas,entry.headers);
 			        	mCallBack.callBack(request, callBackdata);
 						continue;
 					} 
-					
 					//过期了之后丢放etag 和  Last-Modified
-					if(mCacheJudge.usefulEtag(entry.etag)) {
-						request.setEtag(entry.etag);
-					} else if(mCacheJudge.usefulIMS(entry.iMS)){
-						request.setiMS(entry.iMS);
-					} 
-					
+					setNotModifyHeader(request,entry);
 					mNetQueue.put(request);
 				} catch (IOException e) {
-					Log.i("DemoLog", 3+"");
 					mNetQueue.put(request);
 				} finally{
 					if(quit){
@@ -79,7 +99,10 @@ public class CacheHandler extends Thread {
 				}
 				
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				if(isCancel){
+					Thread.currentThread().interrupt();
+				}
+				this.start();
 			}
 		}
 	}

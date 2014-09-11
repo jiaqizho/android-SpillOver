@@ -30,10 +30,21 @@ public class CallBackResponse implements ResponseHandler{
 			
 			@Override
 			public void run() {
-				request.listener.callBack(responseData);
+				request.listener.callBack(request.handlerCallBack(responseData));
 			}
 		});
     }
+
+	@Override
+	public void callErrorBack(final Request<?> request) {
+		mResponsePoster.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				request.listener.callErrorBack();
+			}
+		});
+	}
     
     
 }

@@ -16,13 +16,15 @@ public class SpillOver {
 	
 	private static boolean isAlive = false;
 	
+	private static RequestHandler sHandler;
+	
 	public static RequestHandler newRequestQueue(Context context) throws IOException, IndexPoolOverflowException{
 		
 		synchronized(SpillOver.class){
 			if(!isAlive){
 				isAlive = true;
 			} else {
-				return null;
+				return sHandler;
 			}
 		}
         File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR); 
@@ -35,6 +37,8 @@ public class SpillOver {
 		}
 		RequestHandler handler = new RequestHandler(heap,cache);
 		handler.init();
+		sHandler = handler;
+		
 		return handler;
 	}
 	

@@ -23,10 +23,12 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	}
 	
 	public interface ResponseListener<T>{
-		public void callBack(String responseData);
+		public void callBack(Object responseData);
+		
+		public void callErrorBack();
 	}
 	
-	public Method method = Method.POST; 
+	public Method method = Method.GET; 
 	
 	public static enum Method{
 		GET,
@@ -58,7 +60,10 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	public String getUrl(){
 		return mUrl;
 	}
-
+	
+	public void reWriteUrl(String str){
+		this.mUrl = str;
+	}
 	
 	private String Etag = null;
 	
@@ -88,8 +93,6 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	
 	public abstract Map<String,String> getParam(); 	//回调参数列表
 
-	protected abstract T handlerCallBack();
-	
-
+	protected abstract T handlerCallBack(String responseContent);
 	
 }

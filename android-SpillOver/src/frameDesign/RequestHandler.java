@@ -38,7 +38,6 @@ public class RequestHandler  {
 		this.mCallBack = callBack;
 	}
 
-
 	public void init()  {
 		
 		mCacheHandler = new CacheHandler(mCacheQueue, mNetQueue,mCache,parse,mCallBack);
@@ -54,5 +53,4 @@ public class RequestHandler  {
 			mNetQueue.add(request);
 		}
 	}
-	
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 /**
  * 所有异常我不处理,所以要在缓存之前保证原子性
  * 
+ * 
  * 这里唯一的问题就是要是数据太大那么可能内部抓不到异常,或者导致数据丢失
  * @author user
  *
@@ -43,7 +44,6 @@ public abstract class Cache {
 	public abstract boolean initialize();
 	
 	protected static Iterator<Object> iterator(Cache.Entry entry) {
-	
 		final List<Object> mlist = new ArrayList<Object>();
 		mlist.add(entry.etag);
 		mlist.add(entry.iMS);
