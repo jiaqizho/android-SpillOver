@@ -2,7 +2,8 @@ package frameDesign;
 
 public interface ResponseHandler {
 	
-	public void callBack(final Request<?> request,final String responseData);
-	
 	public void callErrorBack(Request<?> request);
+
+	public void callBack(Request<?> request, byte[] responseContent,
+			String callBackdata);
 }

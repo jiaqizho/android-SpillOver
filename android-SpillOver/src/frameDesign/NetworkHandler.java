@@ -105,9 +105,8 @@ public class NetworkHandler extends Thread{
 	
     protected void callBackResult(Request<?> request , byte[] responseContent , Map<String,String> responseHeaders){
 		String callBackdata = mResponseParse.byteToEntity(responseContent,responseHeaders);
-		mCallBack.callBack(request, callBackdata);
+    	mCallBack.callBack(request, responseContent,callBackdata);    	
     }
-    
     
 	@Override
 	public void run() {
@@ -171,4 +170,5 @@ public class NetworkHandler extends Thread{
         }
         return result;
     }
+	
 }

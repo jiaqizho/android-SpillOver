@@ -84,7 +84,7 @@ public class CacheHandler extends Thread {
 					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)){ 
 						String callBackdata = null;
 			        	callBackdata = mResponseParse.byteToEntity(entry.datas,entry.headers);
-			        	mCallBack.callBack(request, callBackdata);
+			        	mCallBack.callBack(request, entry.datas,callBackdata);
 						continue;
 					} 
 					//过期了之后丢放etag 和  Last-Modified

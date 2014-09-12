@@ -3,10 +3,16 @@ package frameDesign;
 
 public class CacheJudgement {
 	public boolean hasTTl(long ttl){
+		if(ttl == 0){
+			return false;
+		}
 		return (System.currentTimeMillis() /1000) < ttl; 
 	}
 
 	public boolean hasExpired(long expires) {
+		if(expires == 0){
+			return false;
+		}
 		return (System.currentTimeMillis() /1000) < expires;
 	}
 

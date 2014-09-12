@@ -23,6 +23,7 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	}
 	
 	public interface ResponseListener<T>{
+		//这里的泛型是个坑。。。
 		public void callBack(Object responseData);
 		
 		public void callErrorBack();
@@ -93,6 +94,6 @@ public abstract class Request <T> implements Comparable<Request<T>> {
 	
 	public abstract Map<String,String> getParam(); 	//回调参数列表
 
-	protected abstract T handlerCallBack(String responseContent);
+	protected abstract T handlerCallBack(byte[] responseContent, String callBackdata);
 	
 }

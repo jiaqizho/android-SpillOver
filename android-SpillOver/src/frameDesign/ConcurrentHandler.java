@@ -15,6 +15,7 @@ import org.apache.http.message.BasicHttpResponse;
 
 import android.content.Context;
 import android.os.Looper;
+import android.util.Log;
 import file.BasicCalculator;
 import file.BasicFileCache;
 import file.Cache;
@@ -31,7 +32,6 @@ public class ConcurrentHandler {
 	public int getContorlNum() {
 		return ContorlNum;
 	}
-
 
 	public void setContorlNum(int contorlNum) {
 		ContorlNum = contorlNum;
@@ -73,10 +73,13 @@ public class ConcurrentHandler {
 	
 	public ConcurrentHandler(Context context){
 		this(new BasicFileCache(new BasicCalculator(),new File(context.getCacheDir(), DEFAULT_CACHE_DIR)),new HttpLaunch()
-			,new CallBackResponse(new android.os.Handler(Looper.getMainLooper())),new CacheJudgement(),new HttpResponseParse());
+			,new CallBackResponse(new android.os.Handler(Looper.getMainLooper()))
+			,new CacheJudgement(),new HttpResponseParse());
 	}
 	
 	protected ExecutorService service;
+	
+	private static int num = 0;
 	
 	/**
 	 *	外部请求用for一个整体循环
@@ -86,39 +89,45 @@ public class ConcurrentHandler {
 	 */
 	public void add(final Request<?> request) {
 		service.execute(new Runnable() {
-			@Override
+			@Override 
 			public void run() {
-				try {
+				try { 
 					mSemaphore.acquire();
-				} catch (InterruptedException e1) {
-					
-				}
-				try {
+					//Log.i("DemoLog", "----" + num++ +"======" + mSemaphore.availablePermits());
 					Cache.Entry entry = mCache.get(request.getUrl());
 					if(entry == null){
 						noReqCacheRequest(request);
+						return;
 					}
 					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)){ 
 						String callBackdata = null;
 			        	callBackdata = mResponseParse.byteToEntity(entry.datas,entry.headers);
-			        	mCallBack.callBack(request, callBackdata);
-			        	releaseThreadSemaphore();
+			        	mCallBack.callBack(request, entry.datas,callBackdata);
 			        	return;
 					}
-					
+					 
 					mCacheHandler.setNotModifyHeader(request, entry);
 					noReqCacheRequest(request);
 				} catch (IOException e) {
 					noReqCacheRequest(request);
+				} catch (InterruptedException e) {
+					if(Thread.currentThread().isInterrupted()){
+						Thread.currentThread().interrupt();
+						service.shutdown();
+						return;
+					}
+				} finally {
+					releaseThreadSemaphore();
+					Log.i("DemoLog","======" + mSemaphore.availablePermits());
 				}
-				releaseThreadSemaphore();
+				
 			}
 		});
 	}
 	
 	private NetworkHandler mNetworkHandler;
 	
-	public void noReqCacheRequest(Request<?> request){
+	protected void noReqCacheRequest(Request<?> request){
 		try{
 			BasicHttpResponse response = mHttpHeap.handlerRequest(request);
 			if(response == null){
@@ -169,62 +178,3 @@ public class ConcurrentHandler {
     
     
 }
-
-
-/**
-final Semaphore semp = new Semaphore(5);
-final int[] receveCount = {0};
-ExecutorService threadPool = Executors.newCachedThreadPool();
-for(int j=0;j<newslist.length;j++){
-	final int i = j;
-	threadPool.execute(new Runnable() {
-		
-		@Override
-		public void run() {
-			final int index = i;
-			//try {
-				//semp.acquire();
-				NewsContentParams param=new NewsContentParams();
-				param.setId(newslist[i].getId());
-				NetHelper2.ajaxStrFromCacheAndServerInMain(getActivity(), mRequestConAPI, param, new AjaxCallback<String>(){
-		
-					@Override
-					public void callback(String url, String object, AjaxStatus status) {
-						switch(status.getCode()){
-						case NetHelper2.STATE_SUCCESS:
-							NewsContentResult result=new Gson().fromJson(object, NewsContentResult.class);
-							switch(result.getStatus()){
-							case Result.STATUS_SUCCESS:
-								NewsContent content=result.getData();	
-								
-								String con = Util.clrearEmptyLine(content.getContent());
-								if(!con.replace(" ", "").isEmpty()){
-									newslist[index].setPreview(con);
-								}else{
-									newslist[index].setPreview(null);
-								}
-							}
-							break;
-						default:
-							newslist[index].setPreview(null);
-						}
-							
-						receveCount[0]++;
-						if(receveCount[0]==newslist.length){ 
-							if(isNeedRefresh){
-								mAdapter.clearNews();
-							}
-							mAdapter.addNews(newslist);
-							
-						}
-					}
-				},0,mHandler);
-				//semp.release();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	});
-}
-	onFinishLoading();
-	*/

@@ -24,16 +24,6 @@ public class CallBackResponse implements ResponseHandler{
     public CallBackResponse(Executor executor) {
         mResponsePoster = executor;
     }
-    
-    public void callBack(final Request<?> request,final String responseData){
-    	mResponsePoster.execute(new Runnable() {
-			
-			@Override
-			public void run() {
-				request.listener.callBack(request.handlerCallBack(responseData));
-			}
-		});
-    }
 
 	@Override
 	public void callErrorBack(final Request<?> request) {
@@ -44,6 +34,19 @@ public class CallBackResponse implements ResponseHandler{
 				request.listener.callErrorBack();
 			}
 		});
+	}
+
+
+	@Override
+	public void callBack(final Request<?> request,final byte[] responseContent,
+			final String callBackdata) {
+		mResponsePoster.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				request.listener.callBack(request.handlerCallBack(responseContent,callBackdata));
+			}
+		});		
 	}
     
     
