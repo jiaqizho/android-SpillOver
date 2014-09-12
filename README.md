@@ -20,7 +20,7 @@ android-SpillOver
 
 >高鲁棒性,内部异常并发自处理;
 
->新增高并发解决方案(测试阶段)
+>高并发请求解决方案
 
 >...
 
@@ -32,6 +32,6 @@ android-SpillOver
 
 >range的集合封装
 
->Auth的加入
+>Memoizer策略
 
->...
+>Auth的加入
