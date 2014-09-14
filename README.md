@@ -22,16 +22,6 @@ android-SpillOver
 
 >高并发请求解决方案
 
->...
-
-#需要封装
-
->图片两种方式的缓存
-
->cookie、session的封装
-
->range的集合封装
-
 >Memoizer策略
 
->Auth的加入
+>..
