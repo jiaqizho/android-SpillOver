@@ -1,0 +1,35 @@
+	Cache测试;
+		Cache.Entry entry= new Cache.Entry();
+		entry.etag = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		entry.datas = "this is datas";
+		entry.iMS = "asssssssss";
+		entry.ttl = 1407576486;
+		entry.expires = 1407576486;
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("Content-Encoding", "utf-8");
+		map.put("Location", "ss");
+		entry.headers = map;
+		
+		cache.put("www.baidus.com", entry);
+		
+		entry = cache.get("www.baidus.com");
+		Log.i("VolleyPatterns", entry.iMS);
+		Log.i("VolleyPatterns", entry.ttl + "");
+		Log.i("VolleyPatterns", entry.expires + "");
+		for(java.util.Map.Entry<String, String> _entry : entry.headers.entrySet()) {
+			Log.i("VolleyPatterns", _entry.getKey() + "");
+			Log.i("VolleyPatterns", _entry.getValue() + "");
+		}
+		Log.i("VolleyPatterns", entry.datas);
+		
+		
+		
+		Cache.Entry entry = mCache.get("http://192.168.1.104:8080/QQServer/Expires");
+		Log.i("VolleyPatterns", "entry.iMS" + entry.iMS);
+		Log.i("VolleyPatterns", "entry.ttl" + entry.ttl);
+		Log.i("VolleyPatterns", "entry.expires" + entry.expires);
+		for(java.util.Map.Entry<String, String> _entry : entry.headers.entrySet()) {
+			Log.i("VolleyPatterns", "_entry.getKey()" + _entry.getKey() + "");
+			Log.i("VolleyPatterns", "_entry.getValue()" + _entry.getValue() + "");
+		}
+		Log.i("VolleyPatterns", "DATASSSS" + entry.datas );
