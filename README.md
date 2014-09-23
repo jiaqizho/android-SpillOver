@@ -28,4 +28,7 @@ android-SpillOver
 
 #架构示意图:
 
->![file-list](http://img2.ph.126.net/_egLJ2FHGx94wOUgn1XW-g==/6597629418077063645.jpg)
+>![file-list](http://img0.ph.126.net/CL2E7ccyVfi5OAjAo8X_IA==/6608620136306445060.png)
+>![file-list](http://img1.ph.126.net/SJQnKF3ppn8xkRGk3UmBLQ==/6608571757794822292.png)
+>![file-list](http://img2.ph.126.net/tE790hQXmOiAEA7HsCEaDg==/6619475614607116094.png)
+>![file-list](http://img1.ph.126.net/gylrY-TYsb9zuGeg5oEtBw==/6608624534352956137.png)
