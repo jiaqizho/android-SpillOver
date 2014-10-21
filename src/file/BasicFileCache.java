@@ -63,8 +63,9 @@ public class BasicFileCache extends Cache{
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} finally {
+			mIndexNumbers = 0;
 		}
-		
 	}
 	
 	public File getFileForKey(String key) {
