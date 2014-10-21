@@ -64,7 +64,7 @@ public class BasicFileCache extends Cache{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
-			mIndexNumbers = 0;
+			mIndexNumbers = 0;	//还原操作
 		}
 	}
 	
