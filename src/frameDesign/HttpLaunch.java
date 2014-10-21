@@ -19,6 +19,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 
+import frameDesign.Request.Method;
+
 import android.util.Log;
 
 public class HttpLaunch implements HttpHeap {
@@ -26,12 +28,19 @@ public class HttpLaunch implements HttpHeap {
 	
 	private static final int DEFULAT_TIMEOUT = 5000;
 	
+	private String reBackRequest;
+	
 	@Override
 	public BasicHttpResponse handlerRequest(Request<?> request) throws IOException {
 
 		/* 2.2版本以下可能面临请求头加不上的问题哦？
 		 * System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		 */
+		if(request.method == Method.GET){
+			reBackRequest = request.getUrl();
+			setGetParams(request);
+		}
+		
 		URL url = new URL(request.getUrl());
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setConnectTimeout(DEFULAT_TIMEOUT);	
@@ -46,9 +55,14 @@ public class HttpLaunch implements HttpHeap {
 		if(request.getiMS() != null){
 			connection.addRequestProperty("If-Modified-Since",request.getiMS());
 		} 
-		setPostParams(request,connection);
-	 	ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
+		
+		if(request.method == Method.POST){
+			setPostParams(request,connection);
+		}
+		
+		ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
         int responseCode = connection.getResponseCode();
+        request.reWriteUrl(reBackRequest);
         if (responseCode == -1) {
             throw new IOException("连接失败");
         }
@@ -62,25 +76,25 @@ public class HttpLaunch implements HttpHeap {
                 response.addHeader(h);
             }
         }
+        
+        
 		return response;
 	}
 
-
-	private void setPostParams(Request<?> request, HttpURLConnection connection) throws IOException {
-		switch(request.method){
-		case POST:
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-			break;
-		case GET:
-			connection.setRequestMethod("GET");
-			break;	
+	
+	private void setGetParams(Request<?> request){
+		String params = getParams(request);
+		if(params != null && !params.equals("")){
+			request.reWriteUrl(request.getUrl() + "?" + params.substring(0, params.length()));
 		}
-        Map<String,String> map = request.getParam();
+	}
+
+	private String getParams(Request<?> request){
+		Map<String,String> map = request.getParam();
         if(map == null){
-        	return;
+        	return null;
         }
-        String params = "";
+		String params = "";
         int record = 0;
         int size = map.entrySet().size();
         Iterator<Entry<String, String>> iterator = map.entrySet().iterator();
@@ -93,19 +107,17 @@ public class HttpLaunch implements HttpHeap {
         	}
         	params += entry.getKey() + "=" + entry.getValue() + "&";
         }
-        switch(request.method){
-		case POST:
-	        DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-	        byte[] postBody = params.getBytes("UTF-8");
-	        out.write(postBody);
-	        out.close();
-			break;
-		case GET:
-			request.reWriteUrl(request.getUrl() + "?" + params.substring(0, params.length()));
-			Log.i("DemoLog", request.getUrl());
-			break;	
-		}
-        
+        return params;
+	}
+	
+	private void setPostParams(Request<?> request, HttpURLConnection connection) throws IOException {
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		String params = getParams(request);
+		DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+		byte[] postBody = params.getBytes("UTF-8");
+		out.write(postBody);
+		out.close();
 	}
 	
 	private HttpEntity entityFromConnection(HttpURLConnection connection) {

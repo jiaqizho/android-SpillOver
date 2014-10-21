@@ -12,7 +12,8 @@ import android.util.Log;
  * 3.能设置是否进行缓存		默认缓存
  * 4.能设置请求头			默认null
  * 5.能设置参数头			默认null			
- * 6.强制设置毁掉接口
+ * 6.强制读取缓存/不请求读缓存	默认false;
+ * 
  * 
  */
 public abstract class Request <T> implements Comparable<Request<T>>,Comparabler {
@@ -21,6 +22,8 @@ public abstract class Request <T> implements Comparable<Request<T>>,Comparabler 
 	
 	private String mUrl;
 	
+	private boolean forcedReload = false ; 	//强制读取缓存
+
 	public Request(String url ,ResponseListener<T> listener){
 		this.listener = listener;
 		this.mUrl = url;
@@ -63,6 +66,13 @@ public abstract class Request <T> implements Comparable<Request<T>>,Comparabler 
 		return another.getPriority().ordinal() - this.getPriority().ordinal();
 	}
 	
+	public boolean isForcedReload() {
+		return forcedReload;
+	}
+
+	public void setForcedReload(boolean forcedReload) {
+		this.forcedReload = forcedReload;
+	}
 	
 	public boolean shouldCache(){
 		return true;
@@ -105,7 +115,6 @@ public abstract class Request <T> implements Comparable<Request<T>>,Comparabler 
 	public abstract Map<String,String> getParam(); 	//回调参数列表
 
 	protected abstract T handlerCallBack(byte[] responseContent, String callBackdata);
-
 	
 	
 	@Override

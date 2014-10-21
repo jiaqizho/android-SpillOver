@@ -13,7 +13,6 @@ import org.apache.http.message.BasicHttpResponse;
 import android.util.Log;
 
 import file.Cache;
-import file.Cache.Entry;
 import file.IndexPoolOverflowException;
 
 public class NetworkHandler extends Thread{
@@ -35,6 +34,8 @@ public class NetworkHandler extends Thread{
 	public boolean isCancel() {
 		return isCancel;
 	}
+	
+	private Object cacheLock = new Object();
 
 	public void setCancel(boolean isCancel) {
 		this.isCancel = isCancel;
@@ -100,7 +101,9 @@ public class NetworkHandler extends Thread{
 		entry.etag = responseHeaders.get("ETag");
 		entry.headers = responseHeaders;
 		entry.datas = responseContent;
-		mCache.put(requestKey, entry); 		
+		synchronized(cacheLock){	//防止正在cache的时候进行的cache.get操作
+			mCache.put(requestKey, entry);
+		}
 	}
 	
     protected void callBackResult(Request<?> request , byte[] responseContent , Map<String,String> responseHeaders){
@@ -138,12 +141,14 @@ public class NetworkHandler extends Thread{
 					Cache.Entry entry = new Cache.Entry();
 					long ttl = mResponseParse.parseTtl(responseHeaders.get("Cache-Control"));
 					if(ttl == -1){
+						Log.i("DemoLog", 1 + "");
 						callBackResult(request,responseContent,responseHeaders);
 						continue;
 					} 
 					entry.ttl = ttl;
 					cacheWithoutTTL(request.getUrl(),entry,responseHeaders,responseContent);
 				}
+				Log.i("DemoLog", responseContent + "");
 				callBackResult(request,responseContent,responseHeaders);
 			} catch (IOException e) {
 				if(request != null){

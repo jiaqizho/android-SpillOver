@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List; 
+import java.util.List;
 import java.util.Map;
 
 
@@ -39,6 +39,9 @@ public class BasicFileCache extends Cache{
 		this.cacheDir = cacheDir;
 	}
 
+	/**
+	 * 非线程安全
+	 */
 	@Override
 	public void put(String requestKey, Cache.Entry entry) throws IOException, IndexPoolOverflowException {
 		try {
@@ -60,12 +63,12 @@ public class BasicFileCache extends Cache{
 			}
 			writeConstPool(lengths,out,entry);
 			
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
-			mIndexNumbers = 0;	//还原操作
+			mIndexNumbers = 0;
 		}
+		
 	}
 	
 	public File getFileForKey(String key) {
@@ -96,7 +99,7 @@ public class BasicFileCache extends Cache{
 
 
 	@Override
-	public Cache.Entry  get(String requestKey) throws IOException {
+	public Cache.Entry get(String requestKey) throws IOException {
 		byte[] version = new byte[DEFULAT_LONGSTORAGE_LENGTH];
 		byte[] indexPool = new byte[DEFULAT_INDEXPOLL_LENGTH];
 		byte[] constPool = null;

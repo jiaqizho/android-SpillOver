@@ -12,7 +12,7 @@ public class CacheHandler extends Thread {
 	private BlockingQueue<Request<?>> mNetQueue;
 	
 	private Cache mCache = null;
-
+	
 	private CacheJudgement mCacheJudge;
 	
 	private ResponseParse mResponseParse = null;
@@ -74,11 +74,17 @@ public class CacheHandler extends Thread {
 				
 				try { 
 					Cache.Entry entry = mCache.get(request.getUrl());
+					
 					if(entry == null){
+						if(request.isForcedReload()){
+							continue;
+						}
 						mNetQueue.put(request);
 						continue;
 					}
-					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)){ 
+					
+					if(mCacheJudge.hasTTl(entry.ttl) || mCacheJudge.hasExpired(entry.expires)
+							|| request.isForcedReload()){ 
 						String callBackdata = null;
 			        	callBackdata = mResponseParse.byteToEntity(entry.datas,entry.headers);
 			        	mCallBack.callBack(request, new Response(entry.datas, callBackdata));

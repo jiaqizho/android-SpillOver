@@ -3,6 +3,7 @@ package frameDesign;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import android.content.Context;
 import android.os.Looper;
 import file.Cache;
 
@@ -26,8 +27,11 @@ public class RequestHandler  {
 	
 	private RequestMemoizer mRequestMemoizer = null;
 	
+	private ConcurrentHandler mConcurrentHandler = null;
+	
 	public RequestHandler(HttpHeap heap, Cache cache) {
 		this(heap,cache,new HttpResponseParse(),new CallBackResponse(new android.os.Handler(Looper.getMainLooper())));
+		
 	}
 	
 	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse,ResponseHandler callBack) {
@@ -45,6 +49,7 @@ public class RequestHandler  {
 		mCacheHandler.start();
 		mNetworkHandler.start(); 
 		mRequestMemoizer = new RequestMemoizer(mCache, parse, mHttpHeap, mCallBack);
+		mConcurrentHandler = new ConcurrentHandler(mCache,mHttpHeap,mCallBack,parse);
 	}
 
 	public void add(Request<?> request){
@@ -57,5 +62,9 @@ public class RequestHandler  {
 	
 	public void addInMemoizer(Request<?> request){
 		mRequestMemoizer.add(request);
+	}
+	
+	public void addInPool(Request<?> request){
+		mConcurrentHandler.add(request);
 	}
 }
