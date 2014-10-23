@@ -18,7 +18,7 @@ public class SpillOver {
 	
 	private static RequestHandler sHandler;
 	
-	public static RequestHandler newRequestQueue(Context context) throws IOException, IndexPoolOverflowException{
+	public static RequestHandler newRequestQueue(Context context) throws IOException{
 		
 		synchronized(SpillOver.class){
 			if(!isAlive){

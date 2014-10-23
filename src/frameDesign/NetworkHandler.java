@@ -135,20 +135,22 @@ public class NetworkHandler extends Thread{
 		        	noModifiedHandler(request,responseHeaders);
 		        	continue;
 				}
+
+		        if (statusCode < 200 || statusCode > 299) {
+                    throw new IOException();
+                }
 		        
 		        // 设好缓存 
 				if(request.shouldCache()){
 					Cache.Entry entry = new Cache.Entry();
 					long ttl = mResponseParse.parseTtl(responseHeaders.get("Cache-Control"));
 					if(ttl == -1){
-						Log.i("DemoLog", 1 + "");
 						callBackResult(request,responseContent,responseHeaders);
 						continue;
 					} 
 					entry.ttl = ttl;
 					cacheWithoutTTL(request.getUrl(),entry,responseHeaders,responseContent);
 				}
-				Log.i("DemoLog", responseContent + "");
 				callBackResult(request,responseContent,responseHeaders);
 			} catch (IOException e) {
 				if(request != null){

@@ -122,6 +122,11 @@ public class BasicFileCache extends Cache{
 		return entry;
 	}
 	
+	
+	public boolean delete(String requestKey){
+		return getFileForKey(requestKey).delete();
+	}
+	
 	private void setEnrty(Entry entry, List<byte[]> mList) {
 		entry.etag = new String(mList.get(0));
 		entry.iMS = new String(mList.get(1));

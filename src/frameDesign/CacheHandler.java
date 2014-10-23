@@ -3,6 +3,8 @@ package frameDesign;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
+import android.util.Log;
+
 import file.Cache;
 
 public class CacheHandler extends Thread {
@@ -20,6 +22,8 @@ public class CacheHandler extends Thread {
 	private ResponseHandler mCallBack = null;
 	
 	private volatile boolean isCancel = false;
+	
+	private Object lock = new Object();
 	
 	public boolean isCancel() {
 		return isCancel;
@@ -71,10 +75,14 @@ public class CacheHandler extends Thread {
 		while(true){
 			try {
 				Request<?> request = mQueue.take();
-				
-				try { 
-					Cache.Entry entry = mCache.get(request.getUrl());
-					
+				if(request.getUrl() == null){
+					//TODO
+				}
+				try {
+					Cache.Entry entry = null;
+					synchronized(lock){
+						entry = mCache.get(request.getUrl());
+					}
 					if(entry == null){
 						if(request.isForcedReload()){
 							continue;
@@ -95,7 +103,11 @@ public class CacheHandler extends Thread {
 					mNetQueue.put(request);
 				} catch (IOException e) {
 					mNetQueue.put(request);
-				} 
+				} catch(ArrayIndexOutOfBoundsException e){
+					//出现为缓存完成,activity却已经消除.导致的缓存失败情况
+					mCache.delete(request.getUrl());
+					mNetQueue.put(request);
+				}
 				
 			} catch (InterruptedException e) {
 				if(isCancel){
