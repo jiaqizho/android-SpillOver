@@ -1,4 +1,4 @@
-package frameDesign;
+/*package frameDesign;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,34 +81,34 @@ public class ConcurrentHandler {
 	public static final String DEFAULT_CACHE_DIR = "spillover";
 	
 	
-	/**
+	*//**
 	 * 为外部提供的接口
 	 * @param context
-	 */
+	 *//*
 	public ConcurrentHandler(Context context){
 		this(new BasicFileCache(new BasicCalculator(),new File(context.getCacheDir(), DEFAULT_CACHE_DIR)),new HttpLaunch()
 			,new CallBackResponse(new android.os.Handler(Looper.getMainLooper()))
 			,new CacheJudgement(),new HttpResponseParse());
 	}
 	
-	/**
+	*//**
 	 * 为RequestHandler提供的接口
 	 * @param mCache
 	 * @param mHttpHeap
 	 * @param mCallBack
 	 * @param parse
-	 */
+	 *//*
 	public ConcurrentHandler(Cache mCache, HttpHeap mHttpHeap,
 			ResponseHandler mCallBack, ResponseParse parse) {
 		this(mCache,mHttpHeap,mCallBack,new CacheJudgement(),parse);
 	}
 
-	/**
+	*//**
 	 *	外部请求用for一个整体循环
 	 * 
 	 * @param request
 	 * @throws InterruptedException 
-	 */
+	 *//*
 	public void add(final Request<?> request) {
 		service.execute(new Runnable() {
 			@Override 
@@ -202,4 +202,4 @@ public class ConcurrentHandler {
     }
     
     
-}
+}*/

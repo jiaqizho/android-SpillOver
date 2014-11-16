@@ -165,7 +165,7 @@ public class NetworkHandler extends Thread{
 				e.printStackTrace();
 			} catch (IndexPoolOverflowException e) {
 				e.printStackTrace();
-			}
+			} 
 		}
 	}
 

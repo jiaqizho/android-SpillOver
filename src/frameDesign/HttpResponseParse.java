@@ -10,6 +10,9 @@ import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.protocol.HTTP;
 
+/**
+ * Thread Safe 无竞态
+ */
 public class HttpResponseParse implements ResponseParse{
 
 	
@@ -27,11 +30,8 @@ public class HttpResponseParse implements ResponseParse{
     }
 
     /**
-     * 
      * @return 
      * 		当返回 -1 所有缓存失效
-     *  
-     * 
      */
 	@Override
 	public long parseTtl(String headerValue) {
@@ -120,7 +120,6 @@ public class HttpResponseParse implements ResponseParse{
             bytes.close();
         }
     }
-	
 	
 	public String byteToEntity(byte[] data,Map<String,String> headers){
 		 String parsed;

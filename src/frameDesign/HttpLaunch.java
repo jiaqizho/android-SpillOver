@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -61,8 +62,14 @@ public class HttpLaunch implements HttpHeap {
 		}
 		
 		ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
-        int responseCode = connection.getResponseCode();
-        request.reWriteUrl(reBackRequest);
+        int responseCode = -1;
+		try {
+			responseCode = connection.getResponseCode();
+		} catch (IOException e) {
+			throw new IOException();
+		} finally{
+			request.reWriteUrl(reBackRequest);
+		}
         if (responseCode == -1) {
             throw new IOException("连接失败");
         }

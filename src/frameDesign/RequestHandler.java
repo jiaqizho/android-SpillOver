@@ -25,13 +25,17 @@ public class RequestHandler  {
 	
 	private ResponseHandler mCallBack = null;
 	
-	private RequestMemoizer mRequestMemoizer = null;
+//	private RequestMemoizer mRequestMemoizer = null;
 	
-	private ConcurrentHandler mConcurrentHandler = null;
+//	private ConcurrentHandler mConcurrentHandler = null;
 	
 	public RequestHandler(HttpHeap heap, Cache cache) {
-		this(heap,cache,new HttpResponseParse(),new CallBackResponse(new android.os.Handler(Looper.getMainLooper())));
 		
+		this(heap,cache,new HttpResponseParse());
+	}
+	
+	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse) {
+		this(heap,cache,parse,new CallBackResponse(new android.os.Handler(Looper.getMainLooper()),parse,cache));
 	}
 	
 	public RequestHandler(HttpHeap heap, Cache cache,ResponseParse parse,ResponseHandler callBack) {
@@ -48,8 +52,8 @@ public class RequestHandler  {
 		mNetworkHandler = new NetworkHandler(mNetQueue,mCache,mHttpHeap,parse,mCallBack);
 		mCacheHandler.start();
 		mNetworkHandler.start(); 
-		mRequestMemoizer = new RequestMemoizer(mCache, parse, mHttpHeap, mCallBack);
-		mConcurrentHandler = new ConcurrentHandler(mCache,mHttpHeap,mCallBack,parse);
+//		mRequestMemoizer = new RequestMemoizer(mCache, parse, mHttpHeap, mCallBack);
+//		mConcurrentHandler = new ConcurrentHandler(mCache,mHttpHeap,mCallBack,parse);
 	}
 
 	public void add(Request<?> request){
@@ -59,12 +63,18 @@ public class RequestHandler  {
 			mNetQueue.add(request);
 		}
 	}
-	
+	/*
 	public void addInMemoizer(Request<?> request){
 		mRequestMemoizer.add(request);
 	}
-	
+	*/
+	/*
 	public void addInPool(Request<?> request){
 		mConcurrentHandler.add(request);
+	}
+	*/
+	public void cancelAll(){
+		mCacheQueue.clear();
+		mNetQueue.clear();
 	}
 }

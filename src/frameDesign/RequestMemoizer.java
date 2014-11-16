@@ -123,7 +123,9 @@ public class RequestMemoizer {
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (IndexPoolOverflowException e) {
-						e.printStackTrace();
+						Log.i("DemoLog2", "fufufufuf");
+						mCache.delete(request.getUrl());
+						return call();
 					} catch (ServerError e) {
 						e.printStackTrace();
 					}

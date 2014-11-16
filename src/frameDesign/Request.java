@@ -36,10 +36,11 @@ public abstract class Request <T> implements Comparable<Request<T>>,Comparabler 
 	}
 
 	public interface ResponseListener<T>{
-		//这里的泛型是个坑。。。
-		public void callBack(Object responseData);
 		
-		public void callErrorBack();
+		//这里的泛型是个坑。。。
+		public void callBack(Object responseData) throws NullPointerException;
+		
+		public void callErrorBack(byte[] responseContent, String callBackdata) throws NullPointerException;
 	}
 	
 	public Method method = Method.GET; 
