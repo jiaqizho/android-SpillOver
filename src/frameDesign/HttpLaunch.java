@@ -37,8 +37,9 @@ public class HttpLaunch implements HttpHeap {
 		/* 2.2版本以下可能面临请求头加不上的问题哦？
 		 * System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		 */
+		
+		reBackRequest = request.getUrl();
 		if(request.method == Method.GET){
-			reBackRequest = request.getUrl();
 			setGetParams(request);
 		}
 		

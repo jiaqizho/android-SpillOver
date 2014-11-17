@@ -15,7 +15,7 @@ public class CacheHandler extends Thread {
 	
 	private Cache mCache = null;
 	
-	private CacheJudgement mCacheJudge;
+	private CacheJudgement mCacheJudge; 
 	
 	private ResponseParse mResponseParse = null;
 	
@@ -65,14 +65,14 @@ public class CacheHandler extends Thread {
 			request.setiMS(entry.iMS);
 		} 
 	}
-	
+	 
 	@Override
 	public void run() {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		if(mCache.initialize()){
 			//设置cache队列的取消
 		}
-		while(true){
+		while(true){ 
 			try {
 				Request<?> request = mQueue.take();
 				if(request.getUrl() == null){
